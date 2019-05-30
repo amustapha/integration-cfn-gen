@@ -1,0 +1,5 @@
+* DONE Basic minimal Flask app
+* TODO CloudFormation templates
+  SCHEDULED: <2019-05-31 Fri>
+* TODO BuildSpec for CodeBuild
+  SCHEDULED: <2019-05-31 Fri>

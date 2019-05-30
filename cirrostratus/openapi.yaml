@@ -1,0 +1,39 @@
+---
+openapi: 3.0.0
+info:
+  title: Cirrostratus
+  version: 1.0.0
+  description: |
+    Example/testbed CloudFormation project
+servers:
+- url: /testbed/cirrostratus
+  description: We're under the /testbed/ section of the API gateway.
+tags: []
+paths:
+  /coconuts:
+    get:
+      summary: The sounds that a coconut makes, Monty Python style.
+      description: |
+          Get the cloppy clippity horse-like sound two coconut halves make
+          when banged together.
+      operationId: cirrostratusCoconuts
+      responses:
+        200:
+          description: Some onomatopoeia.
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: |
+                Clippy-clop!
+                Clip-clip clop.
+  /echo:
+    post:
+      summary: Echo back posted request body.
+      description: |
+        Hello!
+        Hello!
+      operationId: cirrostratusEcho
+      responses:
+        200:
+          description: Whatever you posted

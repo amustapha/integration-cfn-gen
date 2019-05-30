@@ -1,0 +1,7 @@
+# Actual dependencies are defined in setup.py.
+# This just installs that in editable mode.
+-e .
+# And also install some hand development tools.
+python-dotenv
+flake8
+flake8-mypy

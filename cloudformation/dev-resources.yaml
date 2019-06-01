@@ -1,0 +1,22 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: >
+  Cirrostratus
+
+Resources:
+  ServicePipelineStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL:
+        Fn::Join:
+          - '/'
+          - - Fn::ImportValue: CloudFormationTemplatesBucketURL
+            - development
+            - service-pipeline.yaml
+
+      Parameters:
+        ServiceName: Cirrostratus
+        CodeRepo: Cirrostratus
+        PipelineApprovalEmail: britelines.managers@britecore.com
+        TestImage: python:3.7
+        BuildImage: python:3.7

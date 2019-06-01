@@ -1,0 +1,9 @@
+{
+    "SchemaVersion": "1.0",
+    "ProductVersionName": "beta",
+    "ProductVersionDescription": "Beta Release (Continuous Updates)",
+    "ProductType": "CLOUD_FORMATION_TEMPLATE",
+    "Properties": {
+        "TemplateFilePath": "/cloudformation/template.yaml"
+    }
+}

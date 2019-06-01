@@ -28,7 +28,7 @@ pip install -r requirements.txt
 The `cirrostratus` package is executable:
 
 ```sh
-python -m cirrostratus
+python cirrostratus
 ```
 
 Which is the same as running `python cirrostratus/__main__.py`.
@@ -47,3 +47,14 @@ Handy flask commands are also available: `flask routes` and `flask openapi`.
 The root, where the Flask app is created, is in `cirrostratus/__init__.py`.
 OpenAPI 3.0 documentation is in the file `cirrostratus/openapi.yaml`, and
 accessible with the conventional command `flask openapi`.
+
+
+## CloudFormation
+
+There is a script to produce a CloudFormation template in `cirrostratus_cfn`. Running this is simple.
+
+```sh
+# Install troposphere dependency.
+pip install -e .[cfn]
+python cirrostratus_cfn Cirrostratus > template.yaml
+```

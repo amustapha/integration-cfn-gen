@@ -1,5 +1,12 @@
 * DONE Basic minimal Flask app
-* TODO CloudFormation templates
-  SCHEDULED: <2019-05-31 Fri>
-* TODO BuildSpec for CodeBuild
-  SCHEDULED: <2019-05-31 Fri>
+* DONE CloudFormation templates
+  CLOSED: [2019-05-31 Fri 18:18] SCHEDULED: <2019-05-31 Fri>
+  :LOGBOOK:
+  CLOCK: [2019-05-31 Fri 14:40]--[2019-05-31 Fri 18:16] =>  3:36
+  CLOCK: [2019-05-31 Fri 11:40]--[2019-05-31 Fri 13:23] =>  1:23
+  :END:
+
+    Decided I'm going to try [[https://github.com/cloudtools/troposphere][Troposphere]] rather than use the existing
+    hand-written yaml.
+* DONE BuildSpec for CodeBuild
+  CLOSED: [2019-05-31 Fri 18:18] SCHEDULED: <2019-05-31 Fri>

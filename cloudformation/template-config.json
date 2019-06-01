@@ -1,0 +1,9 @@
+{
+    "Tags": {
+        "Service": "Cirrostratus"
+    },
+
+    "Parameters": {
+        "Secret1": "set-via-admin-console",
+    }
+}

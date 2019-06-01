@@ -1,0 +1,30 @@
+version: 0.2
+
+env:
+  variables:
+    PACKAGE_NAME: cirrostratus
+
+phases:
+  pre_build:
+    commands:
+      - pip install --upgrade pip
+      - pip install -r cloudformation/build-requirements.txt
+
+  build:
+    commands:
+      - pip install -t . -e .[prod,cfn]
+      - export FLASK_APP=$PACKAGE_NAME
+      - python -m flask openapi | aws s3 cp - s3://$S3_BUCKET/$PACKAGE_NAME/build/$CODEBUILD_RESOLVED_SOURCE_VERSION/openapi.yaml
+      - python cirrostratus_cfn $PRODUCT_NAME --package-name $PACKAGE_NAME --s3-bucket $S3_BUCKET --source-version $CODEBUILD_RESOLVED_SOURCE_VERSION | tee compiled-template.yaml | cfn-lint
+      - build-yaml cloudformation/service.yaml > compiled-template.yaml
+      - aws cloudformation package --template compiled-template.yaml --s3-bucket $S3_BUCKET --s3-prefix $PACKAGE_NAME --output-template cloudformation/template.yaml
+
+cache:
+  paths:
+    /root/.cache/pip
+
+artifacts:
+    files:
+      - cloudformation/template.yaml
+      - cloudformation/template-config.json
+      - cloudformation/service-config.json

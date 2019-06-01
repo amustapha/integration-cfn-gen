@@ -11,6 +11,10 @@ PROD_REQUIRES = [
      'http://bc-pip-wheelhouse.s3-website-us-east-1.amazonaws.com/'
      'bc_lambda-0.6.0-py2.py3-none-any.whl'),
 ]
+CLOUDFORMATION_REQUIRES = [
+    'troposphere~=2.4.7',
+    'awacs~=0.9.2',
+]
 # Sets __version__
 exec((pathlib.Path(NAME) / 'version.py').read_text())
 
@@ -22,6 +26,7 @@ setup(
     install_requires=REQUIRES,
     extras_require={
         'prod': PROD_REQUIRES,
+        'cfn': CLOUDFORMATION_REQUIRES,
     },
     description='Testbed for launching CloudFormation Lambda services',
 )

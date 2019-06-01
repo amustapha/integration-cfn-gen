@@ -1,0 +1,123 @@
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  Secret1:
+    Default: SETEC Astronomy
+    Description: A placeholder secret
+    NoEcho: true
+    Type: String
+  Stage:
+    Default: dev
+    Description: The Stage to deploy the Resources to
+    Type: String
+Resources:
+  ApiLambda:
+    Properties:
+      Code: ./
+      Environment:
+        Variables:
+          AWS_STORAGE_BUCKET_NAME:
+            Ref: StorageBucket
+          DEPLOYMENT_STAGE:
+            Ref: Stage
+          FLASK_APP: cirrostratus
+          FLASK_ENV: production
+      FunctionName:
+        Fn::Sub: Cirrostratus-API-${Stage}
+      Handler: cirrostratus.awslambda.handler
+      MemorySize: 1024
+      Role:
+        Fn::GetAtt:
+        - LambdaRole
+        - Arn
+      Runtime: python3.7
+      Timeout: 30
+      TracingConfig:
+        Mode: Active
+      VpcConfig:
+        SecurityGroupIds:
+        - Fn::ImportValue:
+            Fn::Sub: ${Stage}-RDSSecurityGroup
+        SubnetIds:
+          Fn::Split:
+          - ','
+          - Fn::ImportValue:
+              Fn::Sub: ${Stage}-PrivateSubnets
+    Type: AWS::Lambda::Function
+  BriteApiContribution:
+    Properties:
+      LambdaProxyArn:
+        Fn::GetAtt:
+        - ApiLambda
+        - Arn
+      S3Bucket: abucket
+      S3Key:
+        Fn::Join:
+        - /
+        - - cirrostratus/build
+          - foo
+          - openapi.yaml
+      ServiceToken:
+        Fn::ImportValue:
+          Fn::Sub: ${Stage}-ApiContribution-Provider
+    Type: Custom::ApiContribution
+    Version: '1.0'
+  CirrostratusAccountSecret:
+    Properties:
+      Description: Cirrostratus account secret settings
+      Name:
+        Fn::Sub: ${Stage}/cirrostratus/account_settings
+      SecretString:
+        Fn::Sub: '{"secret1": "${Secret1}"}'
+    Type: AWS::SecretsManager::Secret
+  LambdaInvokePermission:
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Ref: ApiLambda
+      Principal: apigateway.amazonaws.com
+    Type: AWS::Lambda::Permission
+  LambdaRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action: sts:AssumeRole
+          Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+            - events.amazonaws.com
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+      - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      - arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess
+      Policies:
+      - PolicyDocument:
+          Statement:
+          - Action: secretsmanager:GetSecretValue
+            Effect: Allow
+            Resource:
+            - Fn::Sub: ${CirrostratusAccountSecret}*
+        PolicyName: AllowGetSecrets
+      - PolicyDocument:
+          Statement:
+          - Action: ssm:GetParameters
+            Effect: Allow
+            Resource:
+            - Fn::Sub: arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${Stage}/cirrostratus*
+        PolicyName: AllowGetSSMParams
+    Type: AWS::IAM::Role
+  Secret1Parameter:
+    Properties:
+      Description: A placeholder secret
+      Name:
+        Fn::Sub: /${Stage}/cirrostratus/secret1
+      Type: String
+      Value:
+        Ref: Secret1
+    Type: AWS::SSM::Parameter
+  StorageBucket:
+    Properties:
+      VersioningConfiguration:
+        Status: Enabled
+    Type: AWS::S3::Bucket
+

@@ -1,7 +1,7 @@
 from typing import Iterable
 
 from .common import Config
-from . import policies
+from . import policy
 
 from troposphere import AWSObject, Sub, ImportValue, Ref, GetAtt
 from troposphere import awslambda as awsλ
@@ -10,7 +10,7 @@ import awacs.awslambda
 import awacs.sts
 
 
-def resources(config: Config) -> Iterable[AWSObject]:
+def items(config: Config) -> Iterable[AWSObject]:
     yield awsλ.Function(
         'ApiLambdaFunc',
         FunctionName=Sub(f'{config.PROJECT_NAME}-API-${{Stage}}'),
@@ -44,14 +44,14 @@ def resources(config: Config) -> Iterable[AWSObject]:
 
     yield iam.Role(
         'LambdaRole',
-        AssumeRolePolicyDocument=policies.AllowAssumeRole,
+        AssumeRolePolicyDocument=policy.AllowAssumeRole,
         ManagedPolicyArns=[
-            policies.AWSLambdaVPCAccessExecutionRole.JSONrepr(),
-            policies.AWSLambdaBasicExecutionRole.JSONrepr(),
-            policies.AWSXRayDaemonWriteAccess.JSONrepr(),
+            policy.AWSLambdaVPCAccessExecutionRole.JSONrepr(),
+            policy.AWSLambdaBasicExecutionRole.JSONrepr(),
+            policy.AWSXRayDaemonWriteAccess.JSONrepr(),
         ],
         Policies=[
-            policies.allow_get_account_secret(config),
-            policies.allow_get_ssm_params(config),
+            policy.allow_get_secrets(config, ['Secret1']),
+            policy.allow_get_ssm_params(config),
         ],
     )

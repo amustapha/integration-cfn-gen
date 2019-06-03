@@ -1,4 +1,4 @@
-from .common import Config
+from typing import Iterable
 
 from troposphere import Sub
 from troposphere.iam import Policy
@@ -11,6 +11,7 @@ import awacs.ssm
 import awacs.sts
 import awacs.iam
 
+from .common import Config
 
 AWSLambdaVPCAccessExecutionRole = awacs.iam.ARN(
     'policy/service-role/AWSLambdaVPCAccessExecutionRole',
@@ -39,7 +40,7 @@ AllowAssumeRole = awacs.aws.Policy(
 )
 
 
-def allow_get_account_secret(config: Config) -> Policy:
+def allow_get_secrets(config: Config, secret_names: Iterable[str]) -> Policy:
     return Policy(
         'AllowGetAccountSecret',
         PolicyName='AllowGetAccountSecret',
@@ -48,8 +49,10 @@ def allow_get_account_secret(config: Config) -> Policy:
                 Statement(
                     Action=[awacs.secretsmanager.GetSecretValue],
                     Effect=Allow,
-                    Resource=[Sub(f'${{{config.PROJECT_NAME}'
-                                  f'AccountSecret}}*')],
+                    Resource=[
+                        Sub(f'${{{config.PROJECT_NAME}{n}Secret}}*')
+                        for n in secret_names
+                    ],
                 )
             ]
         )

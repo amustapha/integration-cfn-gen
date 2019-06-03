@@ -17,7 +17,7 @@ class APIContribution(AWSCustomObject):
     )
 
 
-def resources(config: Config) -> Iterable[APIContribution]:
+def items(config: Config) -> Iterable[APIContribution]:
     yield APIContribution(
         'BriteApiContribution',
         Version='1.0',

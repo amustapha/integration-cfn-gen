@@ -6,10 +6,11 @@ from typing import Iterable
 
 import flask
 
-from .version import VERSION as __version__, API_VERSION
+from .version import VERSION as __version__, API_VERSION  # noqa
 
 ROOT_DIR = pathlib.Path(__file__).parent
 OPENAPI_YAML_PATH = ROOT_DIR / 'openapi.yaml'
+
 
 def create_app() -> flask.Flask:
     app = flask.Flask('cirrostratus')

@@ -1,42 +1,24 @@
-from typing import Iterable
+from typing import Iterable, Union
 
-from troposphere import Template, Parameter, AWSObject
+from troposphere import Template, AWSObject, Parameter
 
 from cirrostratus_cfn.common import Config
-from . import s3, awslambda, api, secret, ssm
+from . import parameters, s3, awslambda, api, secret
 
 
-def parameters(config: Config) -> Iterable[Parameter]:
-    yield Parameter(
-        'Stage',
-        Type='String',
-        Description='The State to which to deploy Resources',
-        Default='dev',
-    )
-    yield Parameter(
-        'Secret1',
-        Type='String',
-        Description='A placeholder secret',
-        NoEcho=True,
-        Default='SETEC Astronomy',
-    )
-
-
-def resources(config: Config) -> Iterable[AWSObject]:
-    yield from s3.resources(config)
-    yield from awslambda.resources(config)
-    yield from api.resources(config)
-    yield from secret.resources(config)
-    yield from ssm.resources(config)
+def items(config: Config) -> Iterable[Union[AWSObject, Parameter]]:
+    for mod in {parameters, s3, awslambda, api, secret}:
+        yield from mod.items(config)
 
 
 def template(config: Config) -> Template:
     t = Template()
     t.set_version('2010-09-09')
-    for p in parameters(config):
-        t.add_parameter(p)
-    for r in resources(config):
-        t.add_resource(r)
+    for i in items(config):
+        if isinstance(i, Parameter):
+            t.add_parameter(i)
+        else:
+            t.add_resource(i)
     return t
 
 

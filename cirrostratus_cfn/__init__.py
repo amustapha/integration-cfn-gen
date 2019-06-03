@@ -3,11 +3,11 @@ from typing import Iterable, Union
 from troposphere import Template, AWSObject, Parameter
 
 from cirrostratus_cfn.common import Config
-from . import parameters, s3, awslambda, api, secret
+from . import parameters, s3, awslambda, secret
 
 
 def items(config: Config) -> Iterable[Union[AWSObject, Parameter]]:
-    for mod in {parameters, s3, awslambda, api, secret}:
+    for mod in {parameters, s3, awslambda, secret}:
         yield from mod.items(config)
 
 

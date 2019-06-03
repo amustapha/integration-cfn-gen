@@ -4,10 +4,22 @@ from .common import Config
 from . import policy
 
 from troposphere import AWSObject, Sub, ImportValue, Ref, GetAtt
+from troposphere.cloudformation import AWSCustomObject
 from troposphere import awslambda as awsλ
 from troposphere import iam
 import awacs.awslambda
 import awacs.sts
+
+
+class APIContribution(AWSCustomObject):
+    resource_type = 'Custom::ApiContribution'
+
+    props = dict(
+        ServiceToken=(str, True),
+        LambdaProxyArn=(str, True),
+        S3Bucket=(str, True),
+        S3Key=(str, True),
+    )
 
 
 def items(config: Config) -> Iterable[AWSObject]:
@@ -54,4 +66,15 @@ def items(config: Config) -> Iterable[AWSObject]:
             policy.allow_get_secrets(config, ['Secret1']),
             policy.allow_get_ssm_params(config),
         ],
+    )
+    yield APIContribution(
+        'BriteApiContribution',
+        Version='1.0',
+        ServiceToken=ImportValue(Sub('${Stage}-ApiContribution-Provider')),
+        LambdaProxyArn=GetAtt('ApiLambdaFunc', 'Arn'),
+        S3Bucket=config.S3_BUCKET,
+        S3Key='/'.join([config.PACKAGE_NAME,
+                        'build',
+                        config.SOURCE_VERSION,
+                        'openapi.yaml']),
     )

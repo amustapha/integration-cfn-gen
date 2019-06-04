@@ -1,12 +1,11 @@
-from typing import Iterable
+from typing import Iterable, Union
 
-from .common import Config
+from .common import Config, Transform
 from . import policy
 
 from troposphere import AWSObject, Sub, ImportValue, Ref, GetAtt
 from troposphere.cloudformation import AWSCustomObject
-from troposphere import awslambda as awsλ
-from troposphere import iam
+from troposphere import awslambda as awsλ, iam, serverless
 import awacs.awslambda
 import awacs.sts
 
@@ -22,16 +21,17 @@ class APIContribution(AWSCustomObject):
     )
 
 
-def items(config: Config) -> Iterable[AWSObject]:
-    yield awsλ.Function(
+def items(config: Config) -> Iterable[Union[AWSObject, Transform]]:
+    yield Transform('AWS::Serverless-2016-10-31')
+    yield serverless.Function(
         'ApiLambdaFunc',
         FunctionName=Sub(f'{config.PROJECT_NAME}-API-${{Stage}}'),
-        Code=awsλ.Code(ZipFile='./'),
+        CodeUri='.',
         Handler=f'{config.PACKAGE_NAME}.awslambda.handler',
         Runtime='python3.7',
         Timeout=30,
         MemorySize=1024,
-        TracingConfig=awsλ.TracingConfig(Mode='Active'),
+        Tracing='Active',
         VpcConfig=awsλ.VPCConfig(
             SecurityGroupIds=ImportValue(Sub('${Stage}-RDSSecurityGroup')),
             SubnetIds=ImportValue(Sub('${Stage}-PrivateSubnets')),

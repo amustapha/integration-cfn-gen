@@ -6,3 +6,7 @@ class Config(NamedTuple):
     PACKAGE_NAME: str
     SOURCE_VERSION: str
     S3_BUCKET: str
+
+
+class Transform(str):
+    ...

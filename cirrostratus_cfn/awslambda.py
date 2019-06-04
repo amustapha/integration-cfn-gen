@@ -1,3 +1,4 @@
+import pathlib
 from typing import Iterable
 
 from .common import Config
@@ -17,8 +18,9 @@ class APIContribution(AWSCustomObject):
     props = dict(
         ServiceToken=(str, True),
         LambdaProxyArn=(str, True),
-        S3Bucket=(str, True),
-        S3Key=(str, True),
+        S3Bucket=(str, False),
+        S3Key=(str, False),
+        SwaggerDefinition=(str, False),
     )
 
 
@@ -67,14 +69,16 @@ def items(config: Config) -> Iterable[AWSObject]:
             policy.allow_get_ssm_params(config),
         ],
     )
+    openapi_data = pathlib.Path(config.OPENAPI_FILE).read_text()
     yield APIContribution(
         'BriteApiContribution',
         Version='1.0',
         ServiceToken=ImportValue(Sub('${Stage}-ApiContribution-Provider')),
         LambdaProxyArn=GetAtt('ApiLambdaFunc', 'Arn'),
-        S3Bucket=config.S3_BUCKET,
-        S3Key='/'.join([config.PACKAGE_NAME,
-                        'build',
-                        config.SOURCE_VERSION,
-                        'openapi.yaml']),
+        # S3Bucket=config.S3_BUCKET,
+        # S3Key='/'.join([config.PACKAGE_NAME,
+        #                 'build',
+        #                 config.SOURCE_VERSION,
+        #                 'openapi.yaml']),
+        SwaggerDefinition=openapi_data,
     )

@@ -3,7 +3,7 @@ from typing import Iterable
 from .common import Config
 from . import policy
 
-from troposphere import AWSObject, Sub, ImportValue, Ref, GetAtt
+from troposphere import AWSObject, Sub, ImportValue, Ref, GetAtt, Split
 from troposphere.cloudformation import AWSCustomObject
 from troposphere import awslambda as awsλ
 from troposphere import iam
@@ -33,8 +33,8 @@ def items(config: Config) -> Iterable[AWSObject]:
         MemorySize=1024,
         TracingConfig=awsλ.TracingConfig(Mode='Active'),
         VpcConfig=awsλ.VPCConfig(
-            SecurityGroupIds=ImportValue(Sub('${Stage}-RDSSecurityGroup')),
-            SubnetIds=ImportValue(Sub('${Stage}-PrivateSubnets')),
+            SecurityGroupIds=[ImportValue(Sub('${Stage}-RDSSecurityGroup'))],
+            SubnetIds=Split(',', ImportValue(Sub('${Stage}-PrivateSubnets'))),
         ),
         Environment=awsλ.Environment(
             Variables=dict(

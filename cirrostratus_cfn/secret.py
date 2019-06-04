@@ -21,7 +21,7 @@ def items(config: Config) -> Iterable[SecretThing]:
 def secret(name: str, description: str, config: Config,
            default: Optional[str] = None
            ) -> Iterable[Union[CfnParameter, SsmParameter, Secret]]:
-    stage_name = Sub(f'${{Stage}}/{config.PACKAGE_NAME}/{name}')
+    stage_name = Sub(f'/${{Stage}}/{config.PACKAGE_NAME}/{name}')
     yield CfnParameter(
         name,
         Type='String',

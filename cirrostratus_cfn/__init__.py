@@ -2,11 +2,11 @@ from typing import Iterable, Union
 
 from troposphere import Template, AWSObject, Parameter
 
-from cirrostratus_cfn.common import Config, Transform
+from cirrostratus_cfn.common import Config
 from . import parameters, s3, awslambda, secret
 
 
-def items(config: Config) -> Iterable[Union[AWSObject, Parameter, Transform]]:
+def items(config: Config) -> Iterable[Union[AWSObject, Parameter]]:
     for mod in {parameters, s3, awslambda, secret}:
         yield from mod.items(config)
 
@@ -17,8 +17,6 @@ def template(config: Config) -> Template:
     for i in items(config):
         if isinstance(i, Parameter):
             t.add_parameter(i)
-        elif isinstance(i, Transform):
-            t.add_transform(i)
         else:
             t.add_resource(i)
     return t

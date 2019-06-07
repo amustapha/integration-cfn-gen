@@ -10,6 +10,9 @@ PROD_REQUIRES = [
     ('bc-lambda @ '
      'http://bc-pip-wheelhouse.s3-website-us-east-1.amazonaws.com/'
      'bc_lambda-0.6.0-py2.py3-none-any.whl'),
+    ('bc-logger @'
+     'http://bc-pip-wheelhouse.s3-website-us-east-1.amazonaws.com/'
+     'bc_logger-0.3.1-py2.py3-none-any.whl'),
 ]
 CLOUDFORMATION_REQUIRES = [
     'troposphere~=2.4.7',

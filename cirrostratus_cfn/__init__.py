@@ -30,16 +30,12 @@ def main():
     )
     parser.add_argument(dest='project_name')
     parser.add_argument('--package-name')
-    parser.add_argument('--source-version', default='')
-    parser.add_argument('--s3-bucket', default='')
     parser.add_argument('--openapi-file', default='')
     args = parser.parse_args()
 
     config = Config(
         PROJECT_NAME=args.project_name,
         PACKAGE_NAME=args.package_name or args.project_name.lower(),
-        SOURCE_VERSION=args.source_version,
-        S3_BUCKET=args.s3_bucket,
         OPENAPI_FILE=args.openapi_file,
     )
     t = template(config)

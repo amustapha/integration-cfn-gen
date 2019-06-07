@@ -5,16 +5,13 @@ info:
   version: 1.0.0
   description: |
     Example/testbed CloudFormation project
-servers:
-- url: /testbed/cirrostratus
-  description: We're under the /testbed/ section of the API gateway.
 tags: []
 paths:
-  /coconuts:
+  /testbed/cirrostratus/coconuts:
     get:
       summary: The sounds that a coconut makes, Monty Python style.
       description: |
-          Get the cloppy clippity horse-like sound two coconut halves make
+          Get the cloppy clippity horse-like sound that two coconut halves make
           when banged together.
       operationId: cirrostratusCoconuts
       responses:
@@ -27,7 +24,7 @@ paths:
               example: |
                 Clippy-clop!
                 Clip-clip clop.
-  /echo:
+  /testbed/cirrostratus/echo:
     post:
       summary: Echo back posted request body.
       description: |

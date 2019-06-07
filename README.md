@@ -51,10 +51,31 @@ accessible with the conventional command `flask openapi`.
 
 ## CloudFormation
 
-There is a script to produce a CloudFormation template in `cirrostratus_cfn`. Running this is simple.
+There is a script to produce a CloudFormation template in `cirrostratus_cfn`.
+`make` is configured to handle the output of this.
+
+
+### Installation
+
+Couple of extra Python dependencies needed.
 
 ```sh
-# Install troposphere dependency.
 pip install -e .[cfn]
-python cirrostratus_cfn Cirrostratus > template.yaml
 ```
+
+### Preview the Template
+
+```sh
+flask openapi | python cirrostratus_cfn Cirrostratus --openapi-file -
+```
+
+### `make` Operations
+
+If you have `aws` credentials configured, all you need to do is `make deploy`
+and you've got a running stack.
+
++ `make template` produces the template file in `dist/`.
++ `make dist` prepares the Python packages in `dist/`.
++ `make package` runs `aws cloudformation package`, uploads the `dist/` to S3,
+  and produces the fully prepared template in `cloudformats/template.yaml`.
++ `make deploy` deploys the packaged template.

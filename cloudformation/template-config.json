@@ -4,6 +4,6 @@
     },
 
     "Parameters": {
-        "Secret1": "set-via-admin-console",
+        "Secret1": "set-via-admin-console"
     }
 }

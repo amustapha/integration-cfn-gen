@@ -1,17 +1,17 @@
 from typing import Iterable
 
-from troposphere import Sub
+from troposphere import Sub, Ref
 from troposphere.iam import Policy
 from awacs.aws import (PolicyDocument, Statement,
                        Principal, Allow)
 import awacs.aws
 import awacs.awslambda
 import awacs.secretsmanager
-import awacs.ssm
 import awacs.sts
 import awacs.iam
 
 from .common import Config
+
 
 AWSLambdaVPCAccessExecutionRole = awacs.iam.ARN(
     'policy/service-role/AWSLambdaVPCAccessExecutionRole',
@@ -40,38 +40,23 @@ AllowAssumeRole = awacs.aws.Policy(
 )
 
 
-def allow_get_secrets(config: Config, secret_names: Iterable[str]) -> Policy:
+def secret_path(config: Config, secret_name: str) -> Sub:
+    """
+    The stage-subbing path to a secret by name.
+    """
+    return Sub(f'/${{Stage}}/{config.PROJECT_NAME}/{secret_name}')
+
+
+def allow_get_secrets(secret_names: Iterable[str]) -> Policy:
     return Policy(
-        'AllowGetAccountSecret',
-        PolicyName='AllowGetAccountSecret',
+        'AllowGetAccountSecrets',
+        PolicyName='AllowGetAccountSecrets',
         PolicyDocument=PolicyDocument(
             Statement=[
                 Statement(
                     Action=[awacs.secretsmanager.GetSecretValue],
                     Effect=Allow,
-                    Resource=[
-                        Sub(f'${{{config.PROJECT_NAME}{n}Secret}}*')
-                        for n in secret_names
-                    ],
-                )
-            ]
-        )
-    )
-
-
-def allow_get_ssm_params(config: Config) -> Policy:
-    return Policy(
-        'AllowGetSSMParams',
-        PolicyName='AllowGetSSMParams',
-        PolicyDocument=PolicyDocument(
-            Statement=[
-                Statement(
-                    Action=[awacs.ssm.GetParameters],
-                    Effect=Allow,
-                    Resource=[Sub('arn:aws:ssm:${AWS::Region}:'
-                                  '${AWS::AccountId}:'
-                                  'parameter/${Stage}/'
-                                  f'{config.PACKAGE_NAME}')],
+                    Resource=[Ref(f'Secret{n}') for n in secret_names],
                 )
             ]
         )

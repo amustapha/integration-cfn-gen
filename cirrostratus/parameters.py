@@ -2,12 +2,12 @@ from typing import Iterable
 
 from troposphere import Parameter
 
-from cirrostratus.common import Config
+from .common import Config
 
 
 def items(config: Config) -> Iterable[Parameter]:
     yield Parameter(
         'Stage',
         Type='String',
-        Description='The State to which to deploy Resources',
+        Description='The Stage to which to deploy Resources',
         Default='dev')

@@ -1,35 +1,32 @@
 all:
 
-dist: cirrostratus setup.py
+dist: project_name/** setup.py
 	pip install -t dist .[prod]
 
-dist/openapi.yaml: cirrostratus/openapi.yaml
+dist/openapi.yaml: project_name/openapi.yaml
 	mkdir -p dist
-	python -m flask openapi > dist/openapi.yaml
+	cp project_name/openapi.yaml > dist/openapi.yaml
 
-dist/template.yaml: dist/openapi.yaml cirrostratus
+template.yaml: dist/openapi.yaml project_name/cfn.py
 	mkdir -p dist
-	python -m cirrostratus Cirrostratus --openapi dist/openapi.yaml > dist/template.yaml
+	python -m cirrostratus ProjectName \
+		--openapi dist/openapi.yaml \
+		--secret BACKEND_UID "Backend User Identifier" "" \
+    --plugin project_name.cfn:items \
+		> dist/template.yaml
 
 .ONESHELL:
-cloudformation/template.yaml: dist dist/template.yaml
+cloudformation/template.yaml: dist/** template.yaml
 	cd dist
 	aws cloudformation package \
-		--template template.yaml \
-		--s3-bucket bc-wcf-dev-lambda-bin \
-		--s3-prefix Cirrostratus \
+		--template ../template.yaml \
+		--s3-bucket ${S3_PROJECT} \
+		--s3-prefix ProjectName \
 		--output-template ../cloudformation/template.yaml
 
-template: dist/template.yaml
+template: template.yaml
 
 package: cloudformation/template.yaml
 
-deploy: cloudformation/template.yaml
-	aws cloudformation deploy \
-		--stack-name cirrostratus \
-		--template cloudformation/template.yaml \
-		--capabilities CAPABILITY_IAM
-
 clean:
-	rm -rf dist
-	rm cloudformation/template.yaml
+	rm -rf dist/ template.yaml cloudformation/template.yaml

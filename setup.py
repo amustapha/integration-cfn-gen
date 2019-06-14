@@ -3,6 +3,7 @@ import pathlib
 from setuptools import setup, find_packages
 
 NAME = 'cirrostratus'
+
 # Sets __version__
 exec((pathlib.Path(NAME) / 'version.py').read_text())
 

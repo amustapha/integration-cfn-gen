@@ -2,7 +2,7 @@ from typing import Iterable
 
 from troposphere import Parameter
 
-from cirrostratus_cfn.common import Config
+from cirrostratus.common import Config
 
 
 def items(config: Config) -> Iterable[Parameter]:

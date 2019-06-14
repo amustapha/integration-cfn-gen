@@ -7,9 +7,9 @@ dist/openapi.yaml: cirrostratus/openapi.yaml
 	mkdir -p dist
 	python -m flask openapi > dist/openapi.yaml
 
-dist/template.yaml: dist/openapi.yaml cirrostratus_cfn
+dist/template.yaml: dist/openapi.yaml cirrostratus
 	mkdir -p dist
-	python -m cirrostratus_cfn Cirrostratus --openapi dist/openapi.yaml > dist/template.yaml
+	python -m cirrostratus Cirrostratus --openapi dist/openapi.yaml > dist/template.yaml
 
 .ONESHELL:
 cloudformation/template.yaml: dist dist/template.yaml

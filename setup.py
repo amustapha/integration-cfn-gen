@@ -3,33 +3,16 @@ import pathlib
 from setuptools import setup, find_packages
 
 NAME = 'cirrostratus'
-REQUIRES = ['flask~=1.0.3']
-PROD_REQUIRES = [
-    'apig-wsgi~=2.2.0',
-    'aws-xray-sdk~=2.4.2',
-    ('bc-lambda @ '
-     'http://bc-pip-wheelhouse.s3-website-us-east-1.amazonaws.com/'
-     'bc_lambda-0.6.0-py2.py3-none-any.whl'),
-    ('bc-logger @'
-     'http://bc-pip-wheelhouse.s3-website-us-east-1.amazonaws.com/'
-     'bc_logger-0.3.1-py2.py3-none-any.whl'),
-]
-CLOUDFORMATION_REQUIRES = [
-    'troposphere~=2.4.7',
-    'awacs~=0.9.2',
-]
 # Sets __version__
 exec((pathlib.Path(NAME) / 'version.py').read_text())
 
 setup(
     name=NAME,
     version=__version__,  # noqa
+    description='Generate CloudFormation for BriteCore Gen 3 Integrations',
     packages=[p for p in find_packages() if not p.endswith('tests')],
-    package_data={NAME: {'openapi.yaml'}},
-    install_requires=REQUIRES,
-    extras_require={
-        'prod': PROD_REQUIRES,
-        'cfn': CLOUDFORMATION_REQUIRES,
-    },
-    description='Testbed for launching CloudFormation Lambda services',
+    install_requires=[
+        'troposphere~=2.4.7',
+        'awacs~=0.9.2',
+    ],
 )

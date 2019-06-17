@@ -53,7 +53,7 @@ def items(config: Config) -> Iterable[AWSObject]:
         Code=PackagedCode('.'),
         Handler=(config.LAMBDA_HANDLER or
                  f'{config.PROJECT_NAME.lower()}.awslambda.handler'),
-        Runtime='python3.7',
+        Runtime=f'python{config.PYTHON_VERSION}',
         Timeout=30,
         MemorySize=1024,
         TracingConfig=awsλ.TracingConfig(Mode='Active'),

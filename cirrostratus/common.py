@@ -17,6 +17,7 @@ class Config():
     OPENAPI_FILE: str
     LAMBDA_HANDLER: str
     SECRETS: List[SecretDefinition]
+    PYTHON_VERSION: str = '3.7'
 
     @contextmanager
     def openapi(self):

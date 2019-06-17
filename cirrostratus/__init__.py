@@ -68,6 +68,11 @@ def main():
         dest='plugins',
         metavar='package.module:function',
         help='Python function yields Troposphere objects to add to template')
+    parser.add_argument(
+        '--python',
+        default='3.7',
+        help='Python version to deploy.',
+    )
     args = parser.parse_args()
 
     config = Config(

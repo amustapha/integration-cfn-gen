@@ -60,6 +60,7 @@ def main():
         action='append',
         dest='secrets',
         metavar=('NAME', 'DESCRIPTION', 'DEFAULT'),
+        default=[],
         help=('define a secret parameter, multiples allowed. '
               'If no default, use empty string "".'))
     parser.add_argument(

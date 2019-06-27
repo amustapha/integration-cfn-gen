@@ -20,6 +20,8 @@ A few optional flags are available for the that command.
  + `--plugin`: Extra functionality can be defined by entering the
    `import.path:func` to a function that outputs Troposphere objects.
  + `--python`: Define the Python version to deploy. Defaults to 3.7.
+ + `--nat-gateway`: Run the Lambda function in the Stage's VPC using a NAT
+   Gateway with fixed IP address; e.g. for IP-whitelisted services.
 
 
 ## Set Up

@@ -16,6 +16,7 @@ class Config(NamedTuple):
     LAMBDA_HANDLER: str
     SECRETS: List[SecretDefinition]
     PYTHON_VERSION: str = '3.7'
+    NAT_GATEWAY: bool = False
 
     @contextmanager
     def openapi(self):

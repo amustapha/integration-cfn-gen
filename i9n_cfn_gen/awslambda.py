@@ -64,6 +64,10 @@ class PackagedFunction(awsλ.Function):
             ),
             Role=GetAtt(role, 'Arn'),
         )
+        if config.NAT_GATEWAY:
+            kwargs['VPCConfig'] = awsλ.VPCConfig(
+                SubnetIds=[Ref('NatPrivSubnet')],
+                SecurityGroupIds=[Ref('NatSecurityGroup')])
         return cls(
             'ApiLambdaFunc',
             **kwargs,
@@ -80,6 +84,9 @@ def make_role(config: Config) -> iam.Role:
     )
     if config.SECRETS:
         kwargs['Policies'] = [secret.policy(config)]
+    if config.NAT_GATEWAY:
+        kwargs['ManagedPolicyArns'].append(
+            policy.AWSLambdaVPCAccessExecutionRole.JSONrepr())
     return iam.Role('LambdaRole', **kwargs)
 
 

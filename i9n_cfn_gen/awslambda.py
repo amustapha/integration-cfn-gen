@@ -1,7 +1,6 @@
 import warnings
 from typing import Iterable
 
-
 from troposphere import AWSObject
 from troposphere import Sub, ImportValue, Ref, GetAtt
 from troposphere.cloudformation import AWSCustomObject
@@ -46,50 +45,64 @@ class PackagedFunction(awsλ.Function):
     props['Code'] = (PackagedCode, True)
 
 
-def items(config: Config) -> Iterable[AWSObject]:
-    yield PackagedFunction(
-        'ApiLambdaFunc',
-        FunctionName=Sub(f'${{Stage}}-{config.PROJECT_NAME}-API'),
-        Code=PackagedCode('.'),
-        Handler=(config.LAMBDA_HANDLER or
-                 f'{config.PROJECT_NAME.lower()}.awslambda.handler'),
-        Runtime=f'python{config.PYTHON_VERSION}',
-        Timeout=30,
-        MemorySize=1024,
-        TracingConfig=awsλ.TracingConfig(Mode='Active'),
-        Environment=awsλ.Environment(
-            Variables=dict(
-                DEPLOYMENT_STAGE=Ref('Stage'),
-                FLASK_ENV='production',
+    @classmethod
+    def make(cls, config: Config, role: iam.Role) -> 'PackagedFunction':
+        kwargs = dict(
+            FunctionName=Ref('AWS::StackName'),
+            Code=PackagedCode('.'),
+            Handler=(config.LAMBDA_HANDLER or
+                    f'{config.PROJECT_NAME.lower()}.awslambda.handler'),
+            Runtime=f'python{config.PYTHON_VERSION}',
+            Timeout=30,
+            MemorySize=1024,
+            TracingConfig=awsλ.TracingConfig(Mode='Active'),
+            Environment=awsλ.Environment(
+                Variables=dict(
+                    DEPLOYMENT_STAGE=Ref('Stage'),
+                    FLASK_ENV='production',
+                ),
             ),
-        ),
-        Role=GetAtt('LambdaRole', 'Arn'),
-    )
+            Role=GetAtt(role, 'Arn'),
+        )
+        return cls(
+            'ApiLambdaFunc',
+            **kwargs,
+        )
 
-    yield awsλ.Permission(
-        'LambdaInvokePermission',
-        FunctionName=Ref('ApiLambdaFunc'),
-        Principal='apigateway.amazonaws.com',
-        Action=awacs.awslambda.InvokeFunction.JSONrepr(),
-    )
 
-    yield iam.Role(
-        'LambdaRole',
+def make_role(config: Config) -> iam.Role:
+    kwargs = dict(
         AssumeRolePolicyDocument=policy.AllowAssumeRole,
         ManagedPolicyArns=[
             policy.AWSLambdaBasicExecutionRole.JSONrepr(),
             policy.AWSXRayDaemonWriteAccess.JSONrepr(),
         ],
-        Policies=[secret.policy(config)],
     )
+    if config.SECRETS:
+        kwargs['Policies'] = [secret.policy(config)]
+    return iam.Role('LambdaRole', **kwargs)
+
+
+def items(config: Config) -> Iterable[AWSObject]:
+    role = make_role(config)
+    yield role
+    func = PackagedFunction.make(config, role)
+    yield func
+
     if config.OPENAPI_FILE:
+        yield awsλ.Permission(
+            'LambdaInvokePermission',
+            FunctionName=Ref(func),
+            Principal='apigateway.amazonaws.com',
+            Action=awacs.awslambda.InvokeFunction.JSONrepr(),
+        )
         with config.openapi() as f:
             openapi_data = yaml.safe_load(f)
         yield APIContribution(
             'BriteApiContribution',
             Version='1.0',
             ServiceToken=ImportValue(Sub('${Stage}-ApiContribution-Provider')),
-            LambdaProxyArn=GetAtt('ApiLambdaFunc', 'Arn'),
+            LambdaProxyArn=GetAtt(func, 'Arn'),
             RestApiId=ImportValue(Sub('${Stage}-BriteAPI')),
             SwaggerDefinition=openapi_data,
         )

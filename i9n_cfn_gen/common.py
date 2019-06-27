@@ -1,4 +1,3 @@
-import dataclasses
 import pathlib
 import sys
 from contextlib import contextmanager
@@ -11,8 +10,7 @@ class SecretDefinition(NamedTuple):
     default: str
 
 
-@dataclasses.dataclass(frozen=True)
-class Config():
+class Config(NamedTuple):
     PROJECT_NAME: str
     OPENAPI_FILE: str
     LAMBDA_HANDLER: str

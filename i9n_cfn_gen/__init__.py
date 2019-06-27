@@ -1,16 +1,17 @@
 import importlib
 from typing import List, Iterable, Union
 
-from troposphere import Template, AWSObject, Parameter
+from troposphere import Template, AWSObject, Parameter, Output
 
 from .common import Config, SecretDefinition
 from .version import __version__  # noqa: F401
 
 
-Item = Union[AWSObject, Parameter]
-BUILTIN_PLUGINS = ['cirrostratus.parameters:items',
-                   'cirrostratus.awslambda:items',
-                   'cirrostratus.secret:items']
+Item = Union[AWSObject, Parameter, Output]
+BUILTIN_PLUGINS = ['i9n_cfn_gen.parameters:items',
+                   'i9n_cfn_gen.awslambda:items',
+                   'i9n_cfn_gen.secret:items',
+                   'i9n_cfn_gen.nat_gateway:items']
 
 
 def plug(config: Config, plugin_path: str) -> Iterable[Item]:
@@ -31,6 +32,8 @@ def template(config: Config, plugins: List[str]) -> Template:
     for i in items(config, plugins):
         if isinstance(i, Parameter):
             t.add_parameter(i)
+        elif isinstance(i, Output):
+            t.add_output(i)
         else:
             t.add_resource(i)
     return t
@@ -81,6 +84,7 @@ def main():
         LAMBDA_HANDLER=args.lambda_handler,
         OPENAPI_FILE=args.openapi_file,
         SECRETS=[SecretDefinition(*s) for s in args.secrets],
+        PYTHON_VERSION=args.python,
     )
     t = template(config, args.plugins or [])
     print(t.to_yaml())

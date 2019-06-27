@@ -9,7 +9,7 @@ dist/openapi.yaml: project_name/openapi.yaml
 
 template.yaml: dist/openapi.yaml project_name/cfn.py
 	mkdir -p dist
-	python -m cirrostratus ProjectName \
+	python -m i9n_cfn_gen ProjectName \
 		--openapi dist/openapi.yaml \
 		--secret BACKEND_UID "Backend User Identifier" "" \
     --plugin project_name.cfn:items \

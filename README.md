@@ -6,7 +6,7 @@ backends.
 
 ## Usage
 
-Basic execution is with `python -m cirrostratus ProjectName once installed.
+Basic execution is with `python -m i9n_cfn_gen ProjectName` once installed.
 
 A few optional flags are available for the that command.
 
@@ -19,6 +19,7 @@ A few optional flags are available for the that command.
    data. A default can be provided. A default of empty string `""` will be ignored.
  + `--plugin`: Extra functionality can be defined by entering the
    `import.path:func` to a function that outputs Troposphere objects.
+ + `--python`: Define the Python version to deploy. Defaults to 3.7.
 
 
 ## Set Up
@@ -32,7 +33,7 @@ your project to make handy use of this project.
 In your Lambda function, reading Secrets can be done with `boto3`.
 
 If you've defined a secret like
-`python -m cirrostratus ProjectName --secret MySecret "Example Secret Password" "correct horse battery staple"`
+`python -m i9n_cfn_gen ProjectName --secret MySecret "Example Secret Password" "correct horse battery staple"`
 you can load it in your Python app like so:
 
 ```python
@@ -54,7 +55,7 @@ MY_SECRET = secret_value['SecretString']
 You can provide extra resources in the template by way of a plugin.
 
 If you have a file like below called `plug.py` and execute the following:
-`python -m cirrostratus ProjectName --plugin plug:stuff` it will add a Parameter
+`python -m i9n_cfn_gen ProjectName --plugin plug:stuff` it will add a Parameter
 and a Bucket.
 
 ```python

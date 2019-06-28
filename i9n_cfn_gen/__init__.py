@@ -77,6 +77,11 @@ def main():
         default='3.7',
         help='Python version to deploy.',
     )
+    parser.add_argument(
+        '--nat-gateway',
+        action='store_true',
+        help='Use a VPC and a NAT gateway so function has fixed IP',
+    )
     args = parser.parse_args()
 
     config = Config(
@@ -85,6 +90,7 @@ def main():
         OPENAPI_FILE=args.openapi_file,
         SECRETS=[SecretDefinition(*s) for s in args.secrets],
         PYTHON_VERSION=args.python,
+        NAT_GATEWAY=args.nat_gateway,
     )
     t = template(config, args.plugins or [])
     print(t.to_yaml())

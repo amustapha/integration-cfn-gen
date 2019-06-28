@@ -44,14 +44,13 @@ class PackagedFunction(awsλ.Function):
     props = awsλ.Function.props.copy()
     props['Code'] = (PackagedCode, True)
 
-
     @classmethod
     def make(cls, config: Config, role: iam.Role) -> 'PackagedFunction':
         kwargs = dict(
             FunctionName=Ref('AWS::StackName'),
             Code=PackagedCode('.'),
             Handler=(config.LAMBDA_HANDLER or
-                    f'{config.PROJECT_NAME.lower()}.awslambda.handler'),
+                     f'{config.PROJECT_NAME.lower()}.awslambda.handler'),
             Runtime=f'python{config.PYTHON_VERSION}',
             Timeout=30,
             MemorySize=1024,
@@ -65,7 +64,7 @@ class PackagedFunction(awsλ.Function):
             Role=GetAtt(role, 'Arn'),
         )
         if config.NAT_GATEWAY:
-            kwargs['VPCConfig'] = awsλ.VPCConfig(
+            kwargs['VpcConfig'] = awsλ.VPCConfig(
                 SubnetIds=[Ref('NatPrivSubnet')],
                 SecurityGroupIds=[Ref('NatSecurityGroup')])
         return cls(

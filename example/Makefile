@@ -9,14 +9,14 @@ dist/openapi.yaml: project_name/openapi.yaml
 
 template.yaml: dist/openapi.yaml project_name/cfn.py
 	mkdir -p dist
-	python -m i9n_cfn_gen ProjectName \
+	i9n-cfn-gen ProjectName \
 		--openapi dist/openapi.yaml \
 		--secret BACKEND_UID "Backend User Identifier" "" \
     --plugin project_name.cfn:items \
 		> dist/template.yaml
 
 .ONESHELL:
-cloudformation/template.yaml: dist/** template.yaml
+cloudformation/template.yaml: dist template.yaml
 	cd dist
 	aws cloudformation package \
 		--template ../template.yaml \

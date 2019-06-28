@@ -18,6 +18,9 @@ setup(
         'awacs~=0.9.2',
     ],
     python_requires='>=3.6.0',
+    entry_points=dict(
+        console_scripts=['i9n-cfn-gen = i9n_cfn_gen:main'],
+    ),
     long_description=README,
     long_description_content_type='text/markdown',
     keywords='BriteCore Gen3 DevOps AWS CloudFormation',

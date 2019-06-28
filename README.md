@@ -6,7 +6,7 @@ backends.
 
 ## Usage
 
-Basic execution is with `python -m i9n_cfn_gen ProjectName` once installed.
+Basic execution is with `i9n-cfn-gen ProjectName` once installed.
 
 A few optional flags are available for the that command.
 
@@ -35,7 +35,7 @@ your project to make handy use of this project.
 In your Lambda function, reading Secrets can be done with `boto3`.
 
 If you've defined a secret like
-`python -m i9n_cfn_gen ProjectName --secret MySecret "Example Secret Password" "correct horse battery staple"`
+`i9n-cfn-gen ProjectName --secret MySecret "Example Secret Password" "correct horse battery staple"`
 you can load it in your Python app like so:
 
 ```python
@@ -57,7 +57,7 @@ MY_SECRET = secret_value['SecretString']
 You can provide extra resources in the template by way of a plugin.
 
 If you have a file like below called `plug.py` and execute the following:
-`python -m i9n_cfn_gen ProjectName --plugin plug:stuff` it will add a Parameter
+`i9n-cfn-gen ProjectName --plugin plug:stuff` it will add a Parameter
 and a Bucket.
 
 ```python

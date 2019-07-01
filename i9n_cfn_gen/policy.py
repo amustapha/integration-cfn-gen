@@ -44,7 +44,7 @@ def secret_path(config: Config, secret_name: str) -> Sub:
     """
     The stage-subbing path to a secret by name.
     """
-    return Sub(f'/${{Stage}}/{config.PROJECT_NAME}/{secret_name}')
+    return Sub(f'/${{AWS::StackName}}/{secret_name}')
 
 
 def allow_get_secrets(secret_names: Iterable[str]) -> Policy:

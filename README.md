@@ -45,11 +45,10 @@ import boto3
 
 
 DEPLOYMENT_STAGE = os.getenv('DEPLOYMENT_STAGE')
+STACK_NAME = os.getenv('STACK_NAME')
 
 secretsmanager = boto3.client('secretsmanager')
-secret_value = secretsmanager.get_secret_value(
-  f'/{DEPLOYMENT_STAGE]/ProjectName/MySecret')
-MY_SECRET = secret_value['SecretString']
+MY_SECRET = secretsmanager.get_secret_value(f'/{STACK_NAME}/MySecret')['SecretString']
 ```
 
 ### Plugins

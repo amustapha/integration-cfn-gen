@@ -57,6 +57,7 @@ class PackagedFunction(awsλ.Function):
             TracingConfig=awsλ.TracingConfig(Mode='Active'),
             Environment=awsλ.Environment(
                 Variables=dict(
+                    STACK_NAME=Ref('AWS::StackName'),
                     DEPLOYMENT_STAGE=Ref('Stage'),
                     FLASK_ENV='production',
                 ),

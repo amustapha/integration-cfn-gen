@@ -8,10 +8,11 @@ from .version import __version__  # noqa: F401
 
 
 Item = Union[AWSObject, Parameter, Output]
-BUILTIN_PLUGINS = ['i9n_cfn_gen.parameters:items',
-                   'i9n_cfn_gen.awslambda:items',
-                   'i9n_cfn_gen.secret:items',
-                   'i9n_cfn_gen.nat_gateway:items']
+BUILTIN_PLUGINS = [
+    'i9n_cfn_gen.parameters:items',
+    'i9n_cfn_gen.awslambda:items',
+    'i9n_cfn_gen.secret:items',
+]
 
 
 def plug(config: Config, plugin_path: str) -> Iterable[Item]:
